@@ -4,22 +4,139 @@
 <meta charset="UTF-8">
 <title>You've GUAC to be Kidding Me!</title>
 <style>
-    body {
+    :root{
+        --bg: #ffffff;
+        --scale-hover: 1.06;
+        --scale-active: 1.12;
+        --transition: 160ms cubic-bezier(.2,.9,.2,1);
+        --shadow-hover: 0 8px 20px rgba(0,0,0,.12);
+        --shadow-active: 0 12px 28px rgba(0,0,0,.16);
+    }
+
+    html,body {
+        height: 100%;
         margin: 0;
+    }
+
+    body {
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #ffffff;
+        background: var(--bg);
     }
-    img {
+
+    /* Make the image act like a button */
+    a.guac-button {
+        display: inline-block;
+        border-radius: 12px; /* small radius for nicer touches on mobile */
+        -webkit-tap-highlight-color: transparent;
+        text-decoration: none;
+        outline: none;
+    }
+
+    a.guac-button img {
         width: auto;
         height: 60vmin;
         object-fit: contain;
+        display: block;
+        transform-origin: center;
+        transition: transform var(--transition), box-shadow var(--transition);
+        will-change: transform;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* hover / focus state (mouse and keyboard) */
+    a.guac-button:hover img,
+    a.guac-button:focus img,
+    a.guac-button:focus-visible img {
+        transform: scale(var(--scale-hover));
+        box-shadow: var(--shadow-hover);
+    }
+
+    /* active / pressed state (mouse down or touch) */
+    a.guac-button:active img,
+    a.guac-button.pressed img {
+        transform: scale(var(--scale-active));
+        box-shadow: var(--shadow-active);
+    }
+
+    /* visible focus outline for keyboard users */
+    a.guac-button:focus-visible {
+        box-shadow: 0 0 0 4px rgba(34,139,34,0.12);
+        border-radius: 12px;
+    }
+
+    /* Small safeguard for very small viewports */
+    @media (max-height: 400px) {
+        a.guac-button img {
+            height: 48vmin;
+        }
     }
 </style>
 </head>
 <body>
-    <img src="guac.png" alt="guac">
+    <!-- Anchor navigates to /guacuments; acts like a button for accessibility -->
+    <a class="guac-button" href="/guacuments" aria-label="Open Guacuments">
+        <img src="guac.png" alt="guac">
+    </a>
+
+<script>
+    // Add pressed class for touch interactions so tap gives the "bigger" effect.
+    (function(){
+        const btn = document.querySelector('.guac-button');
+        if (!btn) return;
+
+        let touchActive = false;
+
+        function setPressed(on){
+            if (on) btn.classList.add('pressed');
+            else btn.classList.remove('pressed');
+        }
+
+        // Touch events
+        btn.addEventListener('touchstart', function(e){
+            touchActive = true;
+            setPressed(true);
+        }, {passive: true});
+
+        btn.addEventListener('touchend', function(e){
+            touchActive = false;
+            setPressed(false);
+            // Let the anchor follow the default tap navigation
+        });
+
+        btn.addEventListener('touchcancel', function(){
+            touchActive = false;
+            setPressed(false);
+        });
+
+        // Mouse events (desktop)
+        btn.addEventListener('mousedown', function(){
+            // Only show while mouse button is held
+            setPressed(true);
+        });
+        document.addEventListener('mouseup', function(){
+            setPressed(false);
+        });
+
+        // Keyboard: make Space behave like a button (Enter already activates anchor)
+        btn.addEventListener('keydown', function(e){
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                // Prevent the page from scrolling
+                e.preventDefault();
+                setPressed(true);
+            }
+        });
+        btn.addEventListener('keyup', function(e){
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                setPressed(false);
+                // trigger navigation
+                btn.click();
+            }
+        });
+    })();
+</script>
 </body>
 </html>
