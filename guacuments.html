@@ -1,25 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>404</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>the guuacuments™</title>
 <style>
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #ffffff;
-    }
-    img {
-        width: auto;
-        height: 60vmin;
-        object-fit: contain;
-    }
+:root{ --guac: #6BBF59; --bg: #ffffff; }
+html,body{height:100%;}
+body{ margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; background:var(--bg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Color Emoji", "Apple Color Emoji"; color:#222; }
+header{ width:100%; padding: 3rem 1rem 1rem; display:flex; justify-content:center; align-items:center; }
+h1{ margin:0; font-size: clamp(1.75rem, 6vw, 3.5rem); color:var(--guac); text-shadow: 0 8px 18px rgba(0,0,0,0.25); letter-spacing:1px; font-weight:800; display:flex; align-items:baseline; gap:0.5rem; }
+h1 .tm{ font-size:0.45em; transform: translateY(-0.15rem); opacity:0.95; }
+.container{ width: min(1200px, 96%); margin: 1rem auto 2rem; display:grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.tile{ width:100%; aspect-ratio:1/1; overflow:hidden; border-radius:10px; background:linear-gradient(180deg,#f7f7f7,#efefef); box-shadow: 0 6px 14px rgba(0,0,0,0.06); display:block; }
+.tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+.footer{ width:100%; padding: 1.25rem 1rem; text-align:center; color:#444; font-size:0.95rem; margin-top:auto; }
+.footer small{ display:block; margin-top:0.35rem; color:#666; font-size:0.85rem; }
+@media (max-width:900px){ .container{ grid-template-columns: repeat(2,1fr); } }
+@media (max-width:480px){ .container{ grid-template-columns: 1fr; } h1{ font-size:1.6rem; } }
 </style>
 </head>
 <body>
-    <img src="404.png" alt="404">
+<header><h1>the guuacuments<span class="tm">™</span></h1></header>
+<main class="container" role="list">
+  <a class="tile" role="listitem" href="/guac_images/guac1.jpg"><img src="/guac_images/guac1.jpg" alt="Guacamole image 1"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac2.jpg"><img src="/guac_images/guac2.jpg" alt="Guacamole image 2"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac3.jpg"><img src="/guac_images/guac3.jpg" alt="Guacamole image 3"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac4.jpg"><img src="/guac_images/guac4.jpg" alt="Guacamole image 4"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac5.jpg"><img src="/guac_images/guac5.jpg" alt="Guacamole image 5"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac6.jpg"><img src="/guac_images/guac6.jpg" alt="Guacamole image 6"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac7.jpg"><img src="/guac_images/guac7.jpg" alt="Guacamole image 7"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac8.jpg"><img src="/guac_images/guac8.jpg" alt="Guacamole image 8"></a>
+  <a class="tile" role="listitem" href="/guac_images/guac9.jpg"><img src="/guac_images/guac9.jpg" alt="Guacamole image 9"></a>
+</main>
+<footer class="footer">
+  © JoyPixels 2025
+  <small>site mad by aj</small>
+</footer>
 </body>
 </html>
