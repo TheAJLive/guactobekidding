@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
 <title>the guacuments™</title>
 <style>
 :root{ --guac:#6BBF59; --bg:#ffffff; }
-
 html,body{ height:100%; }
 
 body{
@@ -17,13 +15,13 @@ body{
   flex-direction:column;
   align-items:center;
   background:var(--bg);
-  font-family: "Comic Sans MS","Comic Sans",cursive,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  font-family:"Comic Sans MS","Comic Sans",cursive,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
   color:#222;
 }
 
 header{
   width:100%;
-  padding: 3rem 1rem 1rem;
+  padding:3rem 1rem 1rem;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -31,23 +29,23 @@ header{
 
 h1{
   margin:0;
-  font-size: clamp(1.75rem, 6vw, 3.5rem);
+  font-size:clamp(1.75rem, 6vw, 3.5rem);
   color:var(--guac);
-  text-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  text-shadow:0 8px 18px rgba(0,0,0,0.25);
   letter-spacing:1px;
   font-weight:800;
 }
 
-/* ALWAYS 3 COLUMNS — NO BREAKPOINTS */
+/* ALWAYS 3 COLUMNS */
 .container{
-  width: min(1200px, 96%);
-  margin: 1rem auto 2rem;
+  width:min(1200px, 96%);
+  margin:1rem auto 2rem;
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  grid-template-columns:repeat(3, 1fr);
+  gap:1rem;
 }
 
-/* square tile fallback (fixes weird “only a couple tiles show” behavior on some setups) */
+/* square tile fallback */
 .tile{
   width:100%;
   position:relative;
@@ -57,11 +55,7 @@ h1{
   box-shadow:0 6px 14px rgba(0,0,0,0.06);
   display:block;
 }
-.tile::before{
-  content:"";
-  display:block;
-  padding-top:100%;
-}
+.tile::before{ content:""; display:block; padding-top:100%; }
 .tile img{
   position:absolute;
   inset:0;
@@ -73,7 +67,7 @@ h1{
 
 .footer{
   width:100%;
-  padding: 1.25rem 1rem;
+  padding:1.25rem 1rem;
   text-align:center;
   color:#444;
   margin-top:auto;
@@ -90,40 +84,12 @@ h1{
 <script>
 const gallery = document.getElementById("gallery");
 
-function openWhiteViewer(imgUrl, altText){
-  const w = window.open("", "_blank");
-  if (!w) return; // popup blocked
-
-  const safeAlt = (altText || "").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  const safeUrl = imgUrl.replace(/"/g, "%22");
-
-  w.document.open();
-  w.document.write(`<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${safeAlt || "image"}</title>
-<style>
-  html,body{height:100%; margin:0; background:#fff;}
-  body{display:flex; align-items:center; justify-content:center;}
-  img{max-width:100vw; max-height:100vh; object-fit:contain; background:#fff;}
-</style>
-</head>
-<body>
-  <img src="${safeUrl}" alt="${safeAlt}">
-</body>
-</html>`);
-  w.document.close();
-}
-
-// generate guac1.jpg → guac40.jpg
 for (let i = 1; i <= 40; i++) {
   const src = `images/guac${i}.jpg`;
 
   const tile = document.createElement("a");
   tile.className = "tile";
-  tile.href = src;
+  tile.href = `viewer.html?src=${encodeURIComponent(src)}&alt=${encodeURIComponent(`guac ${i}`)}`;
   tile.target = "_blank";
   tile.rel = "noopener";
 
@@ -132,12 +98,6 @@ for (let i = 1; i <= 40; i++) {
   img.alt = `guac ${i}`;
   img.loading = "lazy";
   img.decoding = "async";
-
-  // white background viewer when opened in new tab
-  tile.addEventListener("click", (e) => {
-    e.preventDefault();
-    openWhiteViewer(src, img.alt);
-  });
 
   tile.appendChild(img);
   gallery.appendChild(tile);
@@ -151,4 +111,3 @@ for (let i = 1; i <= 40; i++) {
 
 </body>
 </html>
-```

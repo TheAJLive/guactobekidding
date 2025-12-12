@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>viewer</title>
+<style>
+  html,body{height:100%;margin:0;background:#fff;}
+  body{display:flex;align-items:center;justify-content:center;}
+  img{max-width:100vw;max-height:100vh;object-fit:contain;background:#fff;}
+</style>
+</head>
+<body>
+<img id="img" alt="">
+<script>
+  const params = new URLSearchParams(location.search);
+  const src = params.get("src");
+  const alt = params.get("alt") || "";
+  const img = document.getElementById("img");
+
+  if (!src) {
+    document.body.textContent = "No image provided.";
+  } else {
+    img.src = src;
+    img.alt = alt;
+    document.title = alt || "image";
+  }
+</script>
+</body>
+</html>
