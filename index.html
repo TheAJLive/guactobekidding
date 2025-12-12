@@ -24,6 +24,8 @@
         justify-content: center;
         align-items: center;
         background: var(--bg);
+        position: relative;
+        overflow: hidden;
     }
 
     /* Make the image act like a button */
@@ -74,6 +76,67 @@
             height: 48vmin;
         }
     }
+
+    .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.75) 100%);
+        opacity: 0;
+        transition: opacity 2s ease-in;
+    }
+
+    .vignette.active {
+        opacity: 1;
+    }
+
+    .shake-soft {
+        animation: wobble 1s ease-in-out infinite;
+    }
+
+    .shake-strong {
+        animation: wobble-strong 0.5s ease-in-out infinite;
+    }
+
+    @keyframes wobble {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(-1px, 1px) rotate(-1deg); }
+        50% { transform: translate(1px, -1px) rotate(1deg); }
+        75% { transform: translate(-1px, -1px) rotate(0deg); }
+        100% { transform: translate(0, 1px) rotate(1deg); }
+    }
+
+    @keyframes wobble-strong {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        20% { transform: translate(-3px, 3px) rotate(-2deg); }
+        40% { transform: translate(3px, -3px) rotate(2deg); }
+        60% { transform: translate(-3px, -2px) rotate(-1deg); }
+        80% { transform: translate(2px, 3px) rotate(2deg); }
+        100% { transform: translate(0, -2px) rotate(-1deg); }
+    }
+
+    .typewriter-container {
+        position: absolute;
+        bottom: 12vh;
+        width: 100%;
+        text-align: center;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+        font-size: 5vmin;
+        color: #1b1b1b;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    }
+
+    .typewriter-container .letter {
+        display: inline-block;
+        animation: jitter 0.25s ease-in-out infinite;
+        transform-origin: center;
+    }
+
+    @keyframes jitter {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(1px, -1px) rotate(-1deg); }
+        100% { transform: translate(-1px, 1px) rotate(1deg); }
+    }
 </style>
 </head>
 <body>
@@ -81,12 +144,17 @@
     <a class="guac-button" href="/guacuments" aria-label="Open Guacuments">
         <img src="guac.png" alt="guac">
     </a>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="typewriter-container" aria-live="polite"></div>
 
 <script>
     // Add pressed class for touch interactions so tap gives the "bigger" effect.
     (function(){
         const btn = document.querySelector('.guac-button');
-        if (!btn) return;
+        const img = document.querySelector('.guac-button img');
+        const vignette = document.querySelector('.vignette');
+        const typewriterContainer = document.querySelector('.typewriter-container');
+        if (!btn || !img || !vignette || !typewriterContainer) return;
 
         let touchActive = false;
 
@@ -94,6 +162,43 @@
             if (on) btn.classList.add('pressed');
             else btn.classList.remove('pressed');
         }
+
+        function startTypewriter(){
+            const text = 'enter the guacuments™';
+            const totalDuration = 5000; // 5 seconds to finish typing
+            const redirectDelay = 15000; // after typing completes
+            const step = totalDuration / text.length;
+            let index = 0;
+            typewriterContainer.textContent = '';
+
+            const interval = setInterval(() => {
+                const char = text[index];
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.classList.add('letter');
+                typewriterContainer.appendChild(span);
+
+                index += 1;
+                if (index >= text.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        window.location.href = 'guacuments.html';
+                    }, redirectDelay);
+                }
+            }, step);
+        }
+
+        // Timed effects
+        setTimeout(() => {
+            vignette.classList.add('active');
+            img.classList.add('shake-soft');
+        }, 15000);
+
+        setTimeout(() => {
+            img.classList.remove('shake-soft');
+            img.classList.add('shake-strong');
+            startTypewriter();
+        }, 30000);
 
         // Touch events
         btn.addEventListener('touchstart', function(e){
