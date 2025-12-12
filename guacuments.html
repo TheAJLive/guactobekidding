@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,72 +6,78 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>the guacuments™</title>
 <style>
-:root{ --guac: #6BBF59; --bg: #ffffff; }
+:root{ --guac:#6BBF59; --bg:#ffffff; }
 
-html,body{
-    height:100%;
-}
+html,body{ height:100%; }
 
 body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    background:var(--bg);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    color:#222;
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:var(--bg);
+  font-family: "Comic Sans MS","Comic Sans",cursive,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  color:#222;
 }
 
 header{
-    width:100%;
-    padding: 3rem 1rem 1rem;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  width:100%;
+  padding: 3rem 1rem 1rem;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 h1{
-    margin:0;
-    font-size: clamp(1.75rem, 6vw, 3.5rem);
-    color:var(--guac);
-    text-shadow: 0 8px 18px rgba(0,0,0,0.25);
-    letter-spacing:1px;
-    font-weight:800;
+  margin:0;
+  font-size: clamp(1.75rem, 6vw, 3.5rem);
+  color:var(--guac);
+  text-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  letter-spacing:1px;
+  font-weight:800;
 }
 
 /* ALWAYS 3 COLUMNS — NO BREAKPOINTS */
 .container{
-    width: min(1200px, 96%);
-    margin: 1rem auto 2rem;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+  width: min(1200px, 96%);
+  margin: 1rem auto 2rem;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
+/* square tile fallback (fixes weird “only a couple tiles show” behavior on some setups) */
 .tile{
-    width:100%;
-    aspect-ratio:1/1;
-    overflow:hidden;
-    border-radius:10px;
-    background:#eee;
-    box-shadow:0 6px 14px rgba(0,0,0,0.06);
-    display:block;
+  width:100%;
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+  background:#eee;
+  box-shadow:0 6px 14px rgba(0,0,0,0.06);
+  display:block;
 }
-
+.tile::before{
+  content:"";
+  display:block;
+  padding-top:100%;
+}
 .tile img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 .footer{
-    width:100%;
-    padding: 1.25rem 1rem;
-    text-align:center;
-    color:#444;
-    margin-top:auto;
+  width:100%;
+  padding: 1.25rem 1rem;
+  text-align:center;
+  color:#444;
+  margin-top:auto;
+  line-height:1.6;
 }
 </style>
 </head>
@@ -81,25 +88,67 @@ h1{
 <main class="container" id="gallery"></main>
 
 <script>
-// generate guac1.jpg → guac40.jpg
 const gallery = document.getElementById("gallery");
 
+function openWhiteViewer(imgUrl, altText){
+  const w = window.open("", "_blank");
+  if (!w) return; // popup blocked
+
+  const safeAlt = (altText || "").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const safeUrl = imgUrl.replace(/"/g, "%22");
+
+  w.document.open();
+  w.document.write(`<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${safeAlt || "image"}</title>
+<style>
+  html,body{height:100%; margin:0; background:#fff;}
+  body{display:flex; align-items:center; justify-content:center;}
+  img{max-width:100vw; max-height:100vh; object-fit:contain; background:#fff;}
+</style>
+</head>
+<body>
+  <img src="${safeUrl}" alt="${safeAlt}">
+</body>
+</html>`);
+  w.document.close();
+}
+
+// generate guac1.jpg → guac40.jpg
 for (let i = 1; i <= 40; i++) {
-    const tile = document.createElement("a");
-    tile.className = "tile";
-    tile.href = `images/guac${i}.jpg`;
-    tile.target = "_blank";
+  const src = `images/guac${i}.jpg`;
 
-    const img = document.createElement("img");
-    img.src = `images/guac${i}.jpg`;
-    img.alt = `guac ${i}`;
+  const tile = document.createElement("a");
+  tile.className = "tile";
+  tile.href = src;
+  tile.target = "_blank";
+  tile.rel = "noopener";
 
-    tile.appendChild(img);
-    gallery.appendChild(tile);
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = `guac ${i}`;
+  img.loading = "lazy";
+  img.decoding = "async";
+
+  // white background viewer when opened in new tab
+  tile.addEventListener("click", (e) => {
+    e.preventDefault();
+    openWhiteViewer(src, img.alt);
+  });
+
+  tile.appendChild(img);
+  gallery.appendChild(tile);
 }
 </script>
 
-<footer class="footer">the guacuments™ gallery</footer>
+<footer class="footer">
+  <div>© JoyPixels 2025</div>
+  <div>site made by aj</div>
+</footer>
 
 </body>
 </html>
+```
