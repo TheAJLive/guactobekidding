@@ -54,14 +54,12 @@
     a.guac-button:focus img,
     a.guac-button:focus-visible img {
         transform: scale(var(--scale-hover));
-        box-shadow: var(--shadow-hover);
     }
 
     /* active / pressed state (mouse down or touch) */
     a.guac-button:active img,
     a.guac-button.pressed img {
         transform: scale(var(--scale-active));
-        box-shadow: var(--shadow-active);
     }
 
     /* visible focus outline for keyboard users */
@@ -83,7 +81,7 @@
         pointer-events: none;
         background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.75) 100%);
         opacity: 0;
-        transition: opacity 2s ease-in;
+        transition: opacity 15s ease-in;
     }
 
     .vignette.active {
@@ -128,14 +126,15 @@
 
     .typewriter-container .letter {
         display: inline-block;
-        animation: jitter 0.25s ease-in-out infinite;
+        animation: letter-shake 0.28s ease-in-out infinite alternate;
         transform-origin: center;
     }
 
-    @keyframes jitter {
+    @keyframes letter-shake {
         0% { transform: translate(0, 0) rotate(0deg); }
-        50% { transform: translate(1px, -1px) rotate(-1deg); }
-        100% { transform: translate(-1px, 1px) rotate(1deg); }
+        30% { transform: translate(-1px, 1px) rotate(-2deg); }
+        60% { transform: translate(1px, -1px) rotate(2deg); }
+        100% { transform: translate(0, 0) rotate(0deg); }
     }
 </style>
 </head>
@@ -164,7 +163,7 @@
         }
 
         function startTypewriter(){
-            const text = 'enter the guacuments™';
+            const text = 'enter the guacuments ™';
             const totalDuration = 5000; // 5 seconds to finish typing
             const redirectDelay = 15000; // after typing completes
             const step = totalDuration / text.length;
@@ -174,8 +173,9 @@
             const interval = setInterval(() => {
                 const char = text[index];
                 const span = document.createElement('span');
-                span.textContent = char;
+                span.innerHTML = char === ' ' ? '&nbsp;' : char;
                 span.classList.add('letter');
+                span.style.animationDelay = `${Math.random() * 0.2}s`;
                 typewriterContainer.appendChild(span);
 
                 index += 1;

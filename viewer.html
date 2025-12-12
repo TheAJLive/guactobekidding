@@ -5,18 +5,107 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>viewer</title>
 <style>
+  :root{ --transition:0.65s cubic-bezier(.22,.61,.36,1); }
   html,body{height:100%;margin:0;background:#fff;}
-  body{display:flex;align-items:center;justify-content:center;}
-  img{max-width:100vw;max-height:100vh;object-fit:contain;background:#fff;}
+  body{display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .page{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;transition:transform var(--transition), opacity var(--transition);}
+  body.pre-enter-left .page{transform:translateX(-100%); opacity:0;}
+  body.pre-enter-right .page{transform:translateX(100%); opacity:0;}
+  body.page-enter .page{transform:translateX(0); opacity:1;}
+  body.transition-left .page{transform:translateX(-120%); opacity:0;}
+  body.transition-right .page{transform:translateX(120%); opacity:0;}
+
+  img{max-width:100vw;max-height:100vh;object-fit:contain;background:#fff;cursor:pointer;}
+
+  .back-btn{
+    position:fixed;
+    top:12px;
+    left:12px;
+    z-index:5;
+    padding:10px 14px;
+    border:none;
+    border-radius:10px;
+    background:#f5f5f5;
+    color:#222;
+    font-weight:700;
+    font-family:"Comic Sans MS","Comic Sans",cursive,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    box-shadow:0 6px 12px rgba(0,0,0,0.12);
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .back-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 16px rgba(0,0,0,0.16); }
+  .back-btn:active{ transform:translateY(1px); box-shadow:0 4px 8px rgba(0,0,0,0.12); }
+
+  .message{
+    position:fixed;
+    bottom:16px;
+    left:50%;
+    z-index:5;
+    transform:translateX(-50%);
+    background:#f1f1f1;
+    padding:8px 12px;
+    border-radius:8px;
+    color:#222;
+    font-family:inherit;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    opacity:0;
+    transition:opacity 0.25s ease;
+  }
+  .message.show{ opacity:1; }
 </style>
 </head>
 <body>
-<img id="img" alt="">
+<button class="back-btn" type="button" aria-label="Back to guacuments">← Back</button>
+<div class="page">
+  <img id="img" alt="">
+</div>
+<div class="message" id="message" role="status" aria-live="polite"></div>
 <script>
   const params = new URLSearchParams(location.search);
   const src = params.get("src");
   const alt = params.get("alt") || "";
   const img = document.getElementById("img");
+  const backBtn = document.querySelector(".back-btn");
+  const message = document.getElementById("message");
+  const body = document.body;
+
+  const incomingDirection = sessionStorage.getItem("incomingDirection");
+  if (incomingDirection === "fromGallery") {
+    body.classList.add("pre-enter-right");
+  } else if (incomingDirection === "fromViewer") {
+    body.classList.add("pre-enter-left");
+  }
+  requestAnimationFrame(() => body.classList.add("page-enter"));
+  sessionStorage.removeItem("incomingDirection");
+
+  function showMessage(text) {
+    message.textContent = text;
+    message.classList.add("show");
+    setTimeout(() => message.classList.remove("show"), 1800);
+  }
+
+  async function copyImageToClipboard() {
+    if (!src || !navigator.clipboard || !window.ClipboardItem) {
+      showMessage("Clipboard not available");
+      return;
+    }
+    try {
+      const response = await fetch(src);
+      const blob = await response.blob();
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      showMessage("Image copied!");
+    } catch (error) {
+      showMessage("Couldn't copy");
+    }
+  }
+
+  function goBack() {
+    sessionStorage.setItem("incomingDirection", "fromViewer");
+    body.classList.add("transition-right");
+    setTimeout(() => {
+      window.location.href = "guacuments.html";
+    }, 650);
+  }
 
   if (!src) {
     document.body.textContent = "No image provided.";
@@ -25,6 +114,12 @@
     img.alt = alt;
     document.title = alt || "image";
   }
+
+  img.addEventListener("click", copyImageToClipboard);
+  backBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    goBack();
+  });
 </script>
 </body>
 </html>
