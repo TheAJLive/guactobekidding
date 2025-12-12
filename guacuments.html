@@ -17,7 +17,25 @@ body{
   background:var(--bg);
   font-family:"Comic Sans MS","Comic Sans",cursive,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
   color:#222;
+  overflow:hidden;
 }
+
+.page{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition:transform 0.65s cubic-bezier(.22,.61,.36,1), opacity 0.65s ease;
+  transform:translateX(0);
+  opacity:1;
+}
+
+body.pre-enter-left .page{ transform:translateX(-100%); opacity:0; }
+body.pre-enter-right .page{ transform:translateX(100%); opacity:0; }
+body.page-enter .page{ transform:translateX(0); opacity:1; }
+body.transition-left .page{ transform:translateX(-120%); opacity:0; }
+body.transition-right .page{ transform:translateX(120%); opacity:0; }
 
 header{
   width:100%;
@@ -77,12 +95,37 @@ h1{
 </head>
 <body>
 
-<header><h1>the guacuments™</h1></header>
+<div class="page">
+  <header><h1>the guacuments™</h1></header>
 
-<main class="container" id="gallery"></main>
+  <main class="container" id="gallery"></main>
+
+  <footer class="footer">
+    <div>© JoyPixels 2025</div>
+    <div>site made by aj</div>
+  </footer>
+</div>
 
 <script>
 const gallery = document.getElementById("gallery");
+const body = document.body;
+
+const incomingDirection = sessionStorage.getItem("incomingDirection");
+if (incomingDirection === "fromViewer") {
+  body.classList.add("pre-enter-left");
+} else if (incomingDirection === "fromGallery") {
+  body.classList.add("pre-enter-right");
+}
+requestAnimationFrame(() => body.classList.add("page-enter"));
+sessionStorage.removeItem("incomingDirection");
+
+function navigateWithSlide(url) {
+  sessionStorage.setItem("incomingDirection", "fromGallery");
+  body.classList.add("transition-left");
+  setTimeout(() => {
+    window.location.href = url;
+  }, 650);
+}
 
 for (let i = 1; i <= 40; i++) {
   const src = `images/guac${i}.jpg`;
@@ -90,8 +133,6 @@ for (let i = 1; i <= 40; i++) {
   const tile = document.createElement("a");
   tile.className = "tile";
   tile.href = `viewer.html?src=${encodeURIComponent(src)}&alt=${encodeURIComponent(`guac ${i}`)}`;
-  tile.target = "_blank";
-  tile.rel = "noopener";
 
   const img = document.createElement("img");
   img.src = src;
@@ -101,13 +142,13 @@ for (let i = 1; i <= 40; i++) {
 
   tile.appendChild(img);
   gallery.appendChild(tile);
+
+  tile.addEventListener("click", (event) => {
+    event.preventDefault();
+    navigateWithSlide(tile.href);
+  });
 }
 </script>
-
-<footer class="footer">
-  <div>© JoyPixels 2025</div>
-  <div>site made by aj</div>
-</footer>
 
 </body>
 </html>
